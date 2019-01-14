@@ -1,0 +1,26 @@
+天气数据采集：
+1.创建项目：
+	scrapy startproject weather2018
+2.进入项目，创建爬虫：
+	cd weather2018
+	scrapy genspider weather //www.weather.com.cn/weather/101110101.shtml
+3.测试创建的爬虫，无误后，使用shell工具进行页面解析测试
+	scrapy shell "http://www.weather.com.cn/weather/101110101.shtml"
+
+for li in res:
+    day=li.css("h1::text").extract_first()
+    wea=li.css("p.wea::attr(title)").extract_first()
+    tem=li.xpath("p[@class='tem']").xpath("string(.)").extract_first()
+    win1=li.xpath("p[@class='win']/em/span[1]/@title").extract_first()
+    win2=li.css("p.win").xpath("em/span[2]/@title").extract_first()
+    print(win2)
+4.在items.py中创建items项
+5.在spider中加载items类，并实例化，然后给items项添加内容
+	from weather2018.items import Weather2018Item
+	items=Weather2018Item()
+	items['day']=li.css("h1::text").extract_first()
+6.在pipelines.py中添加数据处理的类，进行数据处理
+7.在setting.py中修改配置，将pipeline添加到配置中
+	ITEM_PIPELINES = {
+	    'weather2018.pipelines.Weather2018Pipeline': 300,
+	}
